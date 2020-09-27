@@ -1,25 +1,24 @@
 const fs = require('fs')
+const readline = require('readline');
 
 function check_password(password){
-  const stream = fs.createReadStream("./xato-net-10-million-passwords.txt", {encoding: 'utf8'});
+  const stream = readline.createInterface({
+    input: fs.createReadStream("./xato-net-10-million-passwords.txt", {encoding: 'utf8'}),
+  });
   answer = false
   return new Promise((resolve, reject)=>{
       let answer = false
-      stream.on('data',(chunk) =>{
-        chunk.split('\n').forEach((word) =>{
+      stream.on('line',(word) =>{
           if (word.trim()=== password.trim()) {
                       answer = true;
                       resolve(answer);
-                      stream.destroy();
+                      stream.close();
           }
         })
+      stream.on('close',()=>{
+        resolve(answer);
+        })
       })
-      stream.on('end',(chunk) =>{
-                    resolve(answer);
-        }
-      )
-  })
-
 }
 
 
